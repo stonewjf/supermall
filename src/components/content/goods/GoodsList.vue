@@ -1,8 +1,8 @@
 <template>
   <div class="goods">
     <goods-list-item
-      v-for="item in goods"
-      :key="item.title"
+      v-for="(item, index) in goods"
+      :key="index + item.title"
       :goods-item="item"
     ></goods-list-item>
     <!-- {{ goods }} -->

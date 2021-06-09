@@ -17,8 +17,8 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 @import "assets/css/base.css";
 </style>
 
-P163
+P172
