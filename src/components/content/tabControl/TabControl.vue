@@ -37,13 +37,13 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .tab-control {
   display: flex;
   text-align: center;
   font-size: 15px;
   background-color: #fff;
-  z-index: 999;
+  z-index: 9;
 }
 .tab-control-item {
   flex: 1;

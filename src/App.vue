@@ -3,7 +3,7 @@
     <!-- <h2>hhhhhh</h2> -->
 
     <main-tab-bar></main-tab-bar>
-    <router-view></router-view>
+    <keep-alive exclude="Detail"><router-view></router-view></keep-alive>
   </div>
 </template>
 

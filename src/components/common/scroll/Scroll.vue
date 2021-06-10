@@ -45,15 +45,20 @@ export default {
     });
   },
   methods: {
+    // this.scroll判断是否创建完scroll对象
     scrollTo(x, y, time = 300) {
-      this.scroll.scrollTo(x, y, time);
+      this.scroll && this.scroll.scrollTo(x, y, time);
     },
     finishPullUp() {
-      this.scroll.finishPullUp();
+      this.scroll && this.scroll.finishPullUp();
+    },
+    refresh() {
+      // console.log("------");
+      this.scroll && this.scroll.refresh();
     },
   },
 };
 </script>
 
-<style>
+<style scoped>
 </style>
