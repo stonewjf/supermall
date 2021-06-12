@@ -6,6 +6,21 @@
       <span class="o-price">{{ goods.oldPrice }}</span>
       <span v-if="goods.discount" class="discount">{{ goods.discount }}</span>
     </div>
+    <div class="info-other">
+      <span>{{ goods.columns[0] }}</span>
+      <span>{{ goods.columns[1] }}</span>
+      <span>{{ goods.services[goods.services.length - 1].name }}</span>
+    </div>
+    <div class="info-service">
+      <span
+        class="info-service-item"
+        v-for="index in goods.services.length - 1"
+        :key="index"
+      >
+        <img :src="goods.services[index - 1].icon" alt="" />
+        <span>{{ goods.services[index - 1].name }}</span>
+      </span>
+    </div>
   </div>
 </template>
 
@@ -54,5 +69,28 @@ export default {
   /*让元素上浮一些: 使用相对定位即可*/
   position: relative;
   top: -8px;
+}
+.info-other {
+  margin-top: 15px;
+  line-height: 30px;
+  display: flex;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(100, 100, 100, 0.1);
+  justify-content: space-between;
+}
+.info-service {
+  display: flex;
+  justify-content: space-between;
+  line-height: 60px;
+}
+.info-service-item img {
+  width: 14px;
+  height: 14px;
+  position: relative;
+  top: 2px;
+}
+.info-service-item span {
+  font-size: 13px;
+  color: #333;
 }
 </style>

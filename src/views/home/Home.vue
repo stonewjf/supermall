@@ -47,6 +47,7 @@ import FeatureView from "./ChildComps/FeatureView";
 
 import { getHomeMultidata, getHomeGoods } from "network/home";
 import { debounce } from "common/utils.js";
+import { itemListenerMixin } from "common/mixin";
 
 export default {
   components: {
@@ -59,6 +60,7 @@ export default {
     Scroll,
     BackTop,
   },
+  mixins: [itemListenerMixin],
   data() {
     return {
       banners: [],
@@ -72,6 +74,7 @@ export default {
       isShowBackTop: false,
       tabOffsetTop: 0,
       isTabFixed: false,
+      saveY: 0,
     };
   },
   created() {
@@ -83,16 +86,22 @@ export default {
   },
   mounted() {
     // 监听item中图片加载完成
-    const refresh = debounce(this.$refs.scroll.refresh);
-    this.$bus.$on("itemImageLoad", () => {
-      // this.$refs.scroll.refresh();
-      refresh();
-    });
-
+    // const refresh = debounce(this.$refs.scroll.refresh);
+    // this.$bus.$on("itemImageLoad", () => {
+    //   // this.$refs.scroll.refresh();
+    //   refresh();
+    // });
     // 获取tabControl的offsetTop
     // 所有的组件都有一个$el属性,用于获取组件中的元素
     // this.tabOffsetTop = this.$refs.tabControl.$el.offsetTop;
     // console.log(this.tabOffsetTop);
+  },
+  activated() {
+    this.$refs.scroll.scrollTo(0, this.saveY, 0);
+    this.$refs.scroll.refresh();
+  },
+  deactivated() {
+    this.saveY = this.$refs.scroll.scroll.y;
   },
   computed: {
     showGoods() {
@@ -181,7 +190,7 @@ export default {
 }
 .tab-control {
   position: relative;
-  z-index: 999;
+  z-index: 9;
   top: -2px;
   background-color: #fff;
   /* margin:-2px; */

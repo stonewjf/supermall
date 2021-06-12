@@ -39,10 +39,12 @@ export default {
       this.$emit("scroll", position);
     });
     // 3.监听上拉事件
-    this.scroll.on("pullingUp", () => {
-      // console.log("到底了");
-      this.$emit("pullingUp");
-    });
+    if (this.pullUpLoad) {
+      this.scroll.on("pullingUp", () => {
+        // console.log("到底了");
+        this.$emit("pullingUp");
+      });
+    }
   },
   methods: {
     // this.scroll判断是否创建完scroll对象
