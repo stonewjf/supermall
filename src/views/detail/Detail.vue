@@ -3,9 +3,9 @@
     <detail-nav-bar
       class="detail-nav"
       @titleClick="titleClick"
+      ref="nav"
     ></detail-nav-bar>
-
-    <scroll class="content" ref="scroll">
+    <scroll class="content" ref="scroll" :probeType="3" @scroll="contentScroll">
       <detail-swiper :topImages="topImages"></detail-swiper>
       <detail-base-info :goods="goods"></detail-base-info>
       <detail-shop-info :shop="shop"></detail-shop-info>
@@ -23,6 +23,9 @@
       ></detail-comment-info>
       <goods-list ref="recommend" :goods="recommends"></goods-list>
     </scroll>
+    <detail-bottom-bar @addToCart="addToCart"></detail-bottom-bar>
+    <back-top @click.native="backClick" v-show="isShowBackTop"> </back-top>
+    <toast :message="message" :show="show"></toast>
   </div>
 </template>
 
@@ -34,11 +37,17 @@ import DetailShopInfo from "./ChildComps/DetailShopInfo.vue";
 import DetailGoodsInfo from "./ChildComps/DetailGoodsInfo.vue";
 import DetailParamInfo from "./ChildComps/DetailParamInfo.vue";
 import DetailCommentInfo from "./ChildComps/DetailCommentInfo.vue";
+import DetailBottomBar from "./ChildComps/DetailBottomBar.vue";
 
 import Scroll from "components/common/scroll/Scroll";
+import Toast from "components/common/toast/Toast";
+
 import GoodsList from "components/content/goods/GoodsList";
 
-import { itemListenerMixin } from "common/mixin";
+import { itemListenerMixin, backTopMixin } from "common/mixin";
+
+import { mapActions } from "vuex";
+
 import {
   getDetail,
   Goods,
@@ -58,10 +67,12 @@ export default {
     DetailGoodsInfo,
     DetailParamInfo,
     DetailCommentInfo,
+    DetailBottomBar,
     GoodsList,
+    Toast,
     Scroll,
   },
-  mixins: [itemListenerMixin],
+  mixins: [itemListenerMixin, backTopMixin],
   data() {
     return {
       iid: null,
@@ -73,6 +84,9 @@ export default {
       commentInfo: {},
       recommends: [],
       themeTopYs: [0, 1000, 2000, 3000],
+      currentIndex: 0,
+      message: "",
+      show: false,
     };
   },
   destroyed() {
@@ -83,7 +97,7 @@ export default {
 
     // 1.根据iid请求数据
     getDetail(this.iid).then((res) => {
-      console.log(res);
+      // console.log(res);
       const data = res.result;
       // 顶部图片轮播图
       this.topImages = data.itemInfo.topImages;
@@ -118,21 +132,66 @@ export default {
     });
   },
   methods: {
+    ...mapActions(["addCart"]),
+
     imageLoad() {
       this.$refs.scroll.refresh();
 
-      // 点击title跳转指定位置
+      // 获取offsetTop值，用来点击title跳转指定位置
       this.themeTopYs = [];
       this.themeTopYs.push(0);
       this.themeTopYs.push(this.$refs.params.$el.offsetTop);
       this.themeTopYs.push(this.$refs.comment.$el.offsetTop);
       this.themeTopYs.push(this.$refs.recommend.$el.offsetTop);
-      console.log(this.themeTopYs);
+      // console.log(this.themeTopYs);
       // this.newRefresh();
     },
+
+    // 获取滚动位置
+    contentScroll(position) {
+      // console.log(position);
+
+      // 回到顶部
+      this.isShowBackTop = position.y < -1000;
+
+      // 根据滚动距离显示title
+      const positionY = -position.y;
+      for (let i = this.themeTopYs.length - 1; i >= 0; i--) {
+        if (positionY >= this.themeTopYs[i]) {
+          this.currentIndex = i;
+          break;
+        }
+      }
+      this.$refs.nav.currentIndex = this.currentIndex;
+    },
+
+    // 点击title跳转指定位置
     titleClick(index) {
-      console.log(index);
+      // console.log(index);
       this.$refs.scroll.scrollTo(0, -this.themeTopYs[index], 100);
+    },
+
+    // 将商品添加到购物车
+    addToCart() {
+      const product = {};
+      product.image = this.topImages[0];
+      product.title = this.goods.title;
+      product.desc = this.goods.desc;
+      product.price = this.goods.realPrice;
+      product.iid = this.iid;
+
+      // 利用回调函数显示添加成功信息Promise
+      this.addCart(product).then((res) => {
+        // console.log(res);
+
+        // this.show = true;
+        // this.message = res;
+        // setTimeout(() => {
+        //   this.show = false;
+        // }, 1500);
+
+        this.$toast.show(res);
+      });
     },
   },
 };
@@ -152,7 +211,8 @@ export default {
 }
 .content {
   /* position: absolute; */
-  height: calc(100% - 44px);
+  /* 减号两边加空格 */
+  height: calc(100% - 44px - 58px);
   /* height: 100%; */
   /* overflow: hidden; */
   /* position: absolute;

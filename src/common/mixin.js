@@ -12,6 +12,25 @@ export const itemListenerMixin = {
             newRefresh()
         }
         this.$bus.$on('itemImageLoad', this.itemListener)
-        console.log('hhhhh');
+        // console.log('hhhhh');
+    }
+}
+
+import BackTop from "components/content/backTop/BackTop";
+
+export const backTopMixin = {
+    components: {
+        BackTop,
+    },
+    data() {
+        return {
+            isShowBackTop: false,
+        }
+    },
+    methods: {
+        backClick() {
+            // console.log("assas");
+            this.$refs.scroll.scrollTo(0, 0, 500);
+        },
     }
 }
